@@ -19,8 +19,28 @@ IMAGE_PATH = "datasets/train_sets/"
 LABEL_PATH = "datasets/"
 LABEL_FILE_NAME = "train_labels.txt"
 MODEL_SAVE_PATH = "checkpoints/models/"
+
+try:
+    IMAGE_FORMAT = os.listdir(IMAGE_PATH)[1][-4:]
+except IOError as err:
+    print("something error:\n" + str(err))
+    print("确定后缀格式，文件是不是只有图片格式文件")
+
+
+# 清空文件夹原来的内容
+def removeFileInFirstDir(target_dir):
+    for file in os.listdir(target_dir):
+        target_file = os.path.join(target_dir, file)
+        if os.path.isfile(target_file):
+            os.remove(target_file)
+
+
 if not os.path.exists(MODEL_SAVE_PATH):
     os.makedirs(MODEL_SAVE_PATH)
+else:
+    removeFileInFirstDir(MODEL_SAVE_PATH)
+
+
 def convert2gray(img):
     if len(img.shape) > 2:
         gray = np.mean(img, -1)
@@ -175,7 +195,7 @@ def train_crack_captcha_cnn(images, labels):
     # 定义网络
     output = crack_captcha_cnn()
 
-    # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, Y))
+    # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=Y))
     loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, labels=Y))
     # 最后一层用来分类的softmax和sigmoid有什么不同？
     # optimizer 为了加快训练 learning_rate应该开始大，然后慢慢衰
@@ -206,24 +226,23 @@ def train_crack_captcha_cnn(images, labels):
             acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
             # print(epoch, acc)
             print("epoch: %d  acc: %f" % (epoch + 1, acc))
-            if (epoch+1) % 5 == 0:
-                saver.save(sess, MODEL_SAVE_PATH+"crack_capcha.model", global_step=epoch+1)
+            if (epoch + 1) % 5 == 0:
+                saver.save(sess, MODEL_SAVE_PATH + "crack_capcha.model", global_step=epoch + 1)
 
 
 def getStrContent(path):
-    return open(path, 'r', encoding="utf-8").read().strip()
+    return open(path, 'r', encoding="utf-8").read().strip().split("#")
 
 
 def main():
     image_path = IMAGE_PATH
     label_path = LABEL_PATH
     label_path = label_path + LABEL_FILE_NAME
-    images = []
 
-    for each in range(IMAGE_MUMBER):
-        images.append(image_path + str(each) + ".jpg")
-    string = getStrContent(label_path)
-    labels = string.split("#")
+    # 生成image_path list
+    images = [image_path + str(x) + IMAGE_FORMAT for x in range(IMAGE_MUMBER)]
+    # 生成labels list
+    labels = getStrContent(label_path)
     train_crack_captcha_cnn(images, labels)
 
 
