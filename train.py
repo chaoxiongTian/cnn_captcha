@@ -2,6 +2,7 @@
 import numpy as np
 import tensorflow as tf
 import random
+import os
 from PIL import Image
 
 # 图像大小
@@ -14,11 +15,12 @@ CHAR_SET_LEN = 63
 IMAGE_MUMBER = 20
 EPOCH = 200
 BATCH_SIZE = 10
-IMAGE_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/four_char_clean/B/test/"
-LABEL_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/text/"
-LABEL_FILE_NAME = "text_four_char_for_full_experiment_20.txt"
-
-
+IMAGE_PATH = "datasets/train_sets/"
+LABEL_PATH = "datasets/"
+LABEL_FILE_NAME = "train_labels.txt"
+MODEL_SAVE_PATH = "checkpoints/models/"
+if not os.path.exists(MODEL_SAVE_PATH):
+    os.makedirs(MODEL_SAVE_PATH)
 def convert2gray(img):
     if len(img.shape) > 2:
         gray = np.mean(img, -1)
@@ -204,12 +206,12 @@ def train_crack_captcha_cnn(images, labels):
             acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
             # print(epoch, acc)
             print("epoch: %d  acc: %f" % (epoch + 1, acc))
-            if epoch % 10 == 0:
-                saver.save(sess, "crack_capcha.model", global_step=epoch)
+            if (epoch+1) % 5 == 0:
+                saver.save(sess, MODEL_SAVE_PATH+"crack_capcha.model", global_step=epoch+1)
 
 
 def getStrContent(path):
-    return open(path, 'r', encoding="utf-8").read()
+    return open(path, 'r', encoding="utf-8").read().strip()
 
 
 def main():
