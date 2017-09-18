@@ -10,6 +10,12 @@ CHAR_SET_LEN = 63
 IMAGE_FORMAT = ".jpg"
 
 
+IMAGE_MUMBER = 10
+IMAGE_PATH = "../datasets/test_sets/"
+LABEL_PATH = "../datasets/"
+LABEL_FILE_NAME = "test_labels.txt"
+
+
 # 通过np的方式转为灰度图像
 def convert2gray(img):
     if len(img.shape) > 2:
@@ -148,13 +154,8 @@ def crack_captcha_images(images, lables):
 
 
 def getStrContent(path):
-    return open(path, 'r').read()
+    return open(path, 'r').read().strip()
 
-
-IMAGE_MUMBER = 20
-IMAGE_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/four_char_clean/B/test/"
-LABEL_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/four_char_clean/B/"
-LABEL_FILE_NAME = "text_four_char_for_full_experiment_20.txt"
 
 
 def main():
