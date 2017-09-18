@@ -12,6 +12,14 @@ MAX_CAPTCHA = 4
 CHAR_SET_LEN = 63
 IMAGE_FORMAT = ".jpg"
 
+IMAGE_MUMBER = 10
+IMAGE_PATH = "../datasets/test_sets/"
+LABEL_PATH = "../datasets/"
+LABEL_FILE_NAME = "test_labels.txt"
+
+DIR_ERROR_IMAGES = "../datasets/error_image/"
+if not os.path.exists(DIR_ERROR_IMAGES):
+    os.makedirs(DIR_ERROR_IMAGES)
 
 # 把彩色图像转为灰度图像（色彩对识别验证码没有什么用）
 def convert2gray(img):
@@ -154,22 +162,16 @@ def crack_captcha_images(images, lables):
 
 
 def getStrContent(path):
-    return open(path, 'r').read()
+    return open(path, 'r').read().strip()
 
 
-IMAGE_MUMBER = 20
-IMAGE_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/four_char_clean/B/test/"
-LABEL_PATH = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/four_char_clean/B/"
-LABEL_FILE_NAME = "text_four_char_for_full_experiment_20.txt"
 
-DIR_ERROR_IMAGES = "/home/tianchaoxiong/LinuxData/data/verifies/full_experiment/error_image/"
-if not os.path.exists(DIR_ERROR_IMAGES):
-    os.makedirs(DIR_ERROR_IMAGES)
 
 
 def compare_two_str(str1, str2, error_lables_char_list, error_images_char_list, error_images_char_number_list):
     for each in range(len(str1)):
         flag = 0
+
         char1 = str1[each]
         char2 = str2[each]
         if char1 != char2:
@@ -233,7 +235,7 @@ def cope_error_image_2_other_dir(error_images_index, labels):
         cope_image(file_path_original, file_path_target)
         error_labels_text = '#'.join(error_labels)
 
-        f = open(dir_error_images + "error_labels_text.txt", 'w')
+        f = open(LABEL_PATH + "error_labels_text.txt", 'w')
         f.write(error_labels_text)
         f.close()
 
@@ -290,6 +292,7 @@ def main():
     print("准确率:" + str(1 - len(error_labels) / IMAGE_MUMBER))
     print("错误个数:" + str(len(error_labels)))
     # 把识别错误的图片重新整理.
+    print(error_images_index)
     cope_error_image_2_other_dir(error_images_index, labels)
 
 
